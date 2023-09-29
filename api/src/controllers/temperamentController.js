@@ -6,6 +6,11 @@ const urlApi = "https://api.thedogapi.com/v1/breeds?api_key=live_mmcZUtjjwnrpBme
 const getTemperamentsFromApi  = async() => {
   const {data} = await axios.get(urlApi);
   const temperaments = data.map((dog) => dog.temperament);
+  //!consologueamos
+  //!console.log("temperaments fron hte api",temperaments);
+  //!console.log("temperaments fron hte api con join ",temperaments.join(","));
+  //!console.log("temperaments fron hte api con join y split",temperaments.join(",").split(", "));
+  
   return [...new Set(temperaments.join(", ").split(", "))].filter((temp)=>temp!=="");
 }
 //? function to insert  data into the database with bulkCreate [{name:loyal},{name:fast},....]

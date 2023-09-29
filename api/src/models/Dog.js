@@ -4,9 +4,10 @@ const { DataTypes } = require('sequelize');
 module.exports = (dbConnection) => {
   // defino el modelo
   dbConnection.define('dog', {
-    dogId: {
+    id: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey:true
     },
     name: {
       type: DataTypes.STRING,
@@ -27,7 +28,7 @@ module.exports = (dbConnection) => {
       }
     },
     height:{
-      type: DataTypes.JSON,
+      type: DataTypes.STRING,
       allowNull:false,
       validate:{
         notNull:{
@@ -36,7 +37,7 @@ module.exports = (dbConnection) => {
       }
     },
     weight:{
-      type: DataTypes.JSON,
+      type: DataTypes.STRING,
       allowNull:false,
       validate:{
         notNull:{
