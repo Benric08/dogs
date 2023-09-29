@@ -54,12 +54,14 @@ const getAllDogsController = async () => {
 
 const getDogByIdController = async (id) => {
     const dogs = await getAllDogsController();
-
+    //! consologueamos 
+    console.log("viendo que recibimos como id", id);
+    console.log("viendo el tipo de dato del id", typeof id);
     const dogById = dogs.find((dog) => {
-        return dog.id === id;
+        return dog.breed.id === id;
     }
     );
-    if (dogById.length === 0) {
+    if (!dogById) {
         throw new Error("No hay perros asociados con el id solicitado");
     }
     return dogById;
@@ -68,7 +70,7 @@ const getDogByNameController = async (name) => {
     const dogs = await getAllDogsController();
 
     const dogByName = dogs.filter((dog) => {
-        return dog.name.toLowerCase().includes(name);
+        return dog.breed.name.toLowerCase().includes(name);
     }
     );
     if (!dogByName) {

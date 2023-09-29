@@ -11,8 +11,9 @@ const getAllDogsHandler = async (req, res) => {
 
 const getDogByIdHandler = async (req, res) => {
   const { id } = req.params;
+  const idToSearch = +id?+id:id;
   try {
-    const dog = await getDogByIdController(+id);
+    const dog = await getDogByIdController(idToSearch);
     res.status(200).json(dog);
   } catch (error) {
     res.status(400).json({ error: error.message });
