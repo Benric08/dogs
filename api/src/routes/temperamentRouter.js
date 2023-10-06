@@ -3,5 +3,5 @@
 
  const temperamentRouter = Router();
 
- temperamentRouter.get('/temp',saveDataFromApiToDataBaseHandler);
+ temperamentRouter.get('/',saveDataFromApiToDataBaseHandler);
  module.exports = temperamentRouter;
