@@ -97,6 +97,9 @@ export const rootReducer = (state = initialState, action) => {
             return {...state,breeds:action.payload}
         case GET_BREED_BY_ID:
             return {...state,breed:action.payload}
+        case CREATE_BREED:
+            console.log("entramos al reducer crear perro",action.payload);
+            return { ...state, breeds: [...state.breeds,action.payload], allBreeds: [...state.allBreeds,action.payload ]};
         default:
             return { ...state };
     }
