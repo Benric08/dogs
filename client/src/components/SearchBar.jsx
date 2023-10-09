@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components';
+import {useDispatch} from 'react-redux'
+import { searchByName } from '../redux/actions';
 const SearchContainer = styled.div`
         display: flex;
             align-items: center;
@@ -29,12 +31,20 @@ const SearchButton = styled.button`
         cursor: pointer;
     `;
 const SearchBar = () => {
-
+    const dispatch = useDispatch();
+    const [searchearContent, setSearchearContent] = useState("");
+    const handleChangeSearcher = (evento) => { 
+        setSearchearContent(evento.target.value);
+     }
+    const handleSearchByName = () => { 
+        dispatch(searchByName(searchearContent));
+     }
     return (
+        //!falta el loader de buscqueda y ver todos los perros de nuevo 
         <SearchContainer>
             <SearchIcon className="fas fa-search search-icon"></SearchIcon>
-            <SearchInput type="text" placeholder="Buscar..." />
-            <SearchButton >Buscar</SearchButton>
+            <SearchInput type="text" placeholder="Buscar..." name='searcher' onChange={handleChangeSearcher} value={searchearContent}/>
+            <SearchButton onClick={handleSearchByName}>Buscar</SearchButton>
         </SearchContainer>
     )
 }

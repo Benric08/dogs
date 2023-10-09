@@ -35,6 +35,7 @@ const NavBar = () => {
             <NavConatainer>
                 <NavElements><NavAnchor to="/home">Home</NavAnchor></NavElements>
                 <NavElements><NavAnchor to="/favorites"> Favoritos</NavAnchor></NavElements>
+                <NavElements><NavAnchor to="/createdog"> agregar raza</NavAnchor></NavElements>
                 <NavElements></NavElements>
                 <NavElements></NavElements>
             </NavConatainer>

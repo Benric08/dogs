@@ -8,15 +8,19 @@ const urlApi = "https://api.thedogapi.com/v1/breeds?api_key=live_mmcZUtjjwnrpBme
 const MIMETYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
 // TODO: crete a storage path and name to save the dogimage 
 const storage = multer.diskStorage({
+    
     destination: join(__dirname, '../dog_images'),
     filename: (req, file, cb) => {
-        const { dataDog } = req.body; //? recovering all data from the form
+        const dataDog  = req.body.breed; //? recovering all data from the form
         const dog = JSON.parse(dataDog);
         const fileExtension = extname(file.originalname);
 
         cb(null, `${dog.name}_dog_${Date.now()}${fileExtension}`);
+       
     }
 });
+
+
 
 // TODO: create a middleware to storage a image file to save dog image
 const uploadDogImageMiddleware = multer({
@@ -81,6 +85,7 @@ const getDogByNameController = async (name) => {
 
 //TODO: function to create a new breed dog 
 const createDogController = async (dataDog) => {
+    console.log("conologueamos si hay data ", dataDog);
     const { name, image, height, weight, lifeSpan, temperaments } = dataDog;
     const newDog = { name, image, height, weight, lifeSpan };
 

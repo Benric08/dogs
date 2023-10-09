@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import FavoriteIcon from './FavoriteIcon';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import FavoriteIcon from './FavoriteIcon';
 
+const baseurl = "http://localhost:3001";
 const CardElement = styled.section`
         border-radius: 50px;
         height: 70vh;
@@ -30,32 +32,42 @@ const TemperamentWraper = styled.ul`
     justify-content: space-around ;
     
 `;
-const Card = ({breed}) => {
+const Card = ({ breed }) => {
     const myFavorites = useSelector((state) => state.favorites);
     const [isFavorite, setIsFavorite] = useState(false);
 
+    const handleShowDetail = () => {
+
+    }
+
     useEffect(() => {
-      myFavorites.forEach(favorite => {
-        favorite.id===breed.id && setIsFavorite(true);
-      });
-    
+        myFavorites.forEach(favorite => {
+            favorite.id === breed.id && setIsFavorite(true);
+        });
+
     }, [myFavorites])
-    
+
 
     return (
         <CardElement>
             <header>
-                <h3>{breed.name}</h3>
+                <Link to={`/detail/${breed.id}`}>
+                    <h3>{breed.name}</h3>
+                </Link>
                 <FavoriteIcon breed={breed} isFavorite={isFavorite} setIsFavorite={setIsFavorite} />
             </header>
-            <ImageContent>
-                <BreedImage src={breed.image} alt={breed.name}/>
+            <ImageContent >
+                <Link to={`/detail/${breed.id}`}>
+                    <BreedImage src={typeof breed.id==='string'? `${baseurl}/images/${breed.image}`:breed.image} alt={breed.name} />
+                </Link>
             </ImageContent>
             <footer>
+            <Link to={`/detail/${breed.id}`}>
                 <span>Peso: {breed.weight}</span>
                 <TemperamentWraper>
-                    {breed.temperaments.map((temperament,index) => <li key={index}>{temperament}</li>)}
+                    {breed.temperaments.map((temperament, index) => <li key={index}>{temperament}</li>)}
                 </TemperamentWraper>
+            </Link>
             </footer>
         </CardElement>
     )

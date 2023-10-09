@@ -7,6 +7,9 @@ import {
     REMOVE_BREED_TO_FAVORITES,
     SET_FILTER,
     SET_ORDER,
+    SEARCH_BY_NAME,
+    GET_BREED_BY_ID,
+    CREATE_BREED,
 } from "../actions/types";
 
 const initialState = {
@@ -14,6 +17,7 @@ const initialState = {
     breeds: [],
     temperaments: [],
     favorites: [],
+    breed:{},
     error: ''
 }
 
@@ -89,7 +93,10 @@ export const rootReducer = (state = initialState, action) => {
 
             }
 
-
+        case SEARCH_BY_NAME:
+            return {...state,breeds:action.payload}
+        case GET_BREED_BY_ID:
+            return {...state,breed:action.payload}
         default:
             return { ...state };
     }

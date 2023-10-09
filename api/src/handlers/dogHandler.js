@@ -11,7 +11,7 @@ const getAllDogsHandler = async (req, res) => {
 
 const getDogByIdHandler = async (req, res) => {
   const { id } = req.params;
-  const idToSearch = +id?+id:id;
+  const idToSearch = +id ? +id : id;
   try {
     const dog = await getDogByIdController(idToSearch);
     res.status(200).json(dog);
@@ -32,7 +32,15 @@ const getDogByNameHandler = async (req, res) => {
 }
 
 const createDogHandler = async (req, res) => {
-  const dataDog = req.body;
+
+  
+  const dataDog = JSON.parse(req.body.breed);
+ 
+  if (req.file) {
+    
+    const fileName = req.file.filename;
+    dataDog.image = fileName;
+  }
   try {
     const dog = await createDogController(dataDog);
     res.status(200).json(dog);

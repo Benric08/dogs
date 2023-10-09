@@ -8,6 +8,12 @@ import {
    REMOVE_BREED_TO_FAVORITES,
    SET_FILTER,
    SET_ORDER,
+   SEARCH_BY_NAME,
+   SEARCH_BY_NAME_FAILURE,
+   GET_BREED_BY_ID,
+   GET_BREED_BY_ID_FAILURE,
+   CREATE_BREED,
+   CREATE_BREED_FAILURE
 } from './types';
 const basePath = 'http://localhost:3001'
 
@@ -47,5 +53,30 @@ export const removeFavorites = (idBreed) => ({ type: REMOVE_BREED_TO_FAVORITES, 
 export const setFilter = (filters) => ({ type: SET_FILTER, payload: filters });
 
 export const setOrder = (orderBy) => ({ type: SET_ORDER, payload: orderBy });
+
+export const searchByName = (name) => async (dispatch) => {
+   try {
+      const { data } = await axios.get(`${basePath}/dogs/name?name=${name}`);
+      return dispatch({ type: SEARCH_BY_NAME, payload: data });
+   } catch (error) {
+      return dispatch({ type: SEARCH_BY_NAME_FAILURE, payload: "No pudimos Encontrar lo que buscas :(" });
+   }
+}
+export const getBreedById = (id) => async (dispatch) => {
+   try {
+      const { data } = await axios.get(`${basePath}/dogs/${id}`);
+      return dispatch({ type: GET_BREED_BY_ID, payload: data });
+   } catch (error) {
+      return dispatch({ type: GET_BREED_BY_ID_FAILURE, payload: "No pudimos Encontrar la raza :(" });
+   }
+}
+export const createBreed = (formData) => async (dispatch) => {
+   try {
+      const { data } = await axios.get(`${basePath}/dogs/`,formData);
+      return dispatch({ type: CREATE_BREED, payload: data });
+   } catch (error) {
+      return dispatch({ type: CREATE_BREED_FAILURE, payload: "No pudimos crear la raza" });
+   }
+}
 
 
