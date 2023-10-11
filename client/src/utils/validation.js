@@ -7,6 +7,10 @@ export function isEmpty(text) {
     if (text === "") return true;
     else return false;
 }
+export function isArrayEmpty(array) {
+    if (array.length === 0) return true;
+    else return false;
+}
 export function isLengthMax(text, max) {
     if (text.length > max) return true;
     else return false;
@@ -48,16 +52,23 @@ export function isText(text) {
     if (!regex.test(text)) return true;
     else return false;
 }
-export function isFilePdf(file) {
+export function isFileImage(file) {
+    const extensionAllowed = ['jpg', 'png', 'jpeg',]
     if (!file) return
     const name = file?.name;
     const extensionFile = name?.split('.').pop().toLowerCase();
-    if (extensionFile !== 'pdf') return true;
+    if (!extensionAllowed.includes(extensionFile)) return true;
     else return false;
 }
 export function isFileSizeCorrect(file, size) {
+    console.log("vemos el archivo", file);
     if (!file) return
     if (file?.size > size * 1024 * 1024) return true;
     else return false;
 }
 
+export function isGreaterThan(max, min) {
+    
+    if (parseInt(min) >= parseInt(max)) return true;
+    return false;
+}

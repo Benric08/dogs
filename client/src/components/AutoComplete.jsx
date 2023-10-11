@@ -5,23 +5,38 @@ import styled from 'styled-components'
 const Autocomplete = styled.div`
     position: relative;
     width: 300px;
-    margin: 20px auto;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 2px;
+    &:hover{
+        border: 1px solid #807182;
+
+    }
   `;
 
 const Input = styled.input`
     width: 90%;
+    height: 80%;
     padding: 3% 5%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin: 3px;
+    border: none;
+    &:focus{
+        outline-color: white;
+    }
     
   `;
 
 const Options = styled.ul`
     position: absolute;
-    top: 100%;
+    background-color: white;
+    
+    top: 90%;
     left: 0;
     width: 100%;
-    border: 1px solid #786d6d;
+    border: 1px solid #9c8a8a;
     border-top: none;
     border-radius: 0 0 4px 4px;
     max-height: 150px;
@@ -40,11 +55,25 @@ const Items = styled.li`
         background-color: #f2f2f2;
     }
   `;
+const ItemSelected = styled.span`
+    border-radius: 16px;
+    border: 1px solid #b9b0b099;
+    cursor: pointer;
+    padding: 2% 4%;
+    &::after {
+        content: "X";
+        margin-left: 5px;
+        font-weight: 700;
+       
+    }
+
+    
+  `;
 
 
 
 
-const AutoComplete = ({ opciones, getTemperamentsSelected, onFocus }) => {
+const AutoComplete = ({ opciones, getTemperamentsSelected, onBlur,removeTemperamentsFromSelected }) => {
     console.log("tempre", opciones);
     const [opcionesToShow, setOpcionesToShow] = useState(opciones)
     const [inputValue, setInputValue] = useState('');
@@ -67,32 +96,41 @@ const AutoComplete = ({ opciones, getTemperamentsSelected, onFocus }) => {
     };
 
     const handleDeleteElement = (opcion) => {
+        //? Eliminamos la opcion de los elementos seleccionados
         setSelectedOptions(selectedOptions.filter((item) => item.id !== opcion.id));
+        //? Agregamos denuevo el elemento elimnido a las opciones para mostrar
         setOpcionesToShow([...opcionesToShow, opcion]);
+        //? Ejeutamos la funcion que viene por pros para actualizar los temperamentos selccioados
+        removeTemperamentsFromSelected(opcion);
     }
     const handleOptionClick = (opcion) => {
 
-        setOpcionesToShow(opcionesToShow.filter((item) => item.name !== opcion.name));
+        console.log("viendo la opcion seleccionada",opcion);
+        //? agregamos la opcion seleccionada al estado selectedOptions
         setSelectedOptions([...selectedOptions, opcion]);
+        //? Eliminamos la opcion del estado opcionesToShow para que ya no sea elegible 
+        setOpcionesToShow(opcionesToShow.filter((item) => item.name !== opcion.name));
+
         setInputValue("");
         setShowOptions(false);
-        getTemperamentsSelected(selectedOptions);
+
+        getTemperamentsSelected(opcion);
     };
-    const handleOnFocus = (evento) => {
-        evento.target.value = selectedOptions;
-        onFocus(evento);
+    const handleOnFocus = () => {
+        
+        onBlur({target:{name:'temperaments', value:selectedOptions}});
     }
 
 
     return (
         <Autocomplete>
-            {selectedOptions.map((opcion) => <span key={opcion.id}>{opcion.name}<button onClick={() => handleDeleteElement(opcion)}>X</button></span>)}
+            {selectedOptions.map((opcion) => <ItemSelected key={opcion.id} onClick={() => handleDeleteElement(opcion)}>{opcion.name}</ItemSelected>)}
             <Input
                 type="text"
                 value={inputValue}
                 onChange={handleInputChange}
-                onFocus={handleOnFocus}
-                placeholder="Buscar..."
+                onBlur={handleOnFocus}
+                placeholder="Escriba el temperamento de la raza..."
                 name='temperaments'
             />
             {showOptions && (

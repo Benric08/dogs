@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import AutoComplete from '../../components/AutoComplete';
-import InputField from '../../components/InputField';
 import createDogValidation from '../../utils/form-validations/createDogValidator';
 import { createBreed } from '../../redux/actions';
 import styles from './CreateDog.module.css';
-/* "name":"pitfruit bur", 
-   "image":"./hashaha.png", 
-   "height":"", 
-   "weight":"", 
-   "lifeSpan":"9 - 15", 
-   "temperaments": ["c174438f-cb5e-440a-8c94-d60ddd2c0b83"] */
+import iconCamera from '../../assets/icons/camera.svg';
 
 const dataInput = {
   name: "",
@@ -30,10 +24,13 @@ function CreateDog() {
   const [dataOfBreed, setDataOfBreed] = useState(dataInput);
   const [inputTouch, setInputTouch] = useState(dataInput);
   const [errors, setErrors] = useState({});
+  //TODO: recibimos los cambios del componente AutoComplete y los modificacmos en el estado de los inputs
+  const getTemperamentsSelected = (temperament) => {
+    setDataOfBreed({ ...dataOfBreed, temperaments: [...dataOfBreed.temperaments, temperament.id] });
+  }
 
-  const getTemperamentsSelected = (temperaments) => {
-
-    setDataOfBreed({ ...dataOfBreed, temperaments: temperaments.map((temperament) => temperament.id) })
+  const removeTemperamentsFromSelected = (temperament) => {
+    setDataOfBreed({ ...dataOfBreed, temperaments: dataOfBreed.temperaments.filter((temper) => temper !== temperament.id) });
   }
   const handleSubmit = (e) => {
     console.log("enviado datos del peero ", dataOfBreed);
@@ -52,57 +49,106 @@ function CreateDog() {
     const formData = new FormData();
     formData.append('breed', JSON.stringify(dataToSend));
     formData.append('image', dataOfBreed.image);
-    console.log("formdata", formData);
+    console.log("formdata--->>>", formData);
     dispatch(createBreed(formData));
   }
 
   const handleChangeDataBreed = (evento) => {
     const { name, value } = evento.target;
-    //setErrors(createDogValidation({...dataOfBreed, [name]: value }));
+
     if (name === "image") {
       setDataOfBreed({ ...dataOfBreed, [name]: evento.target.files[0] });
-    } else setDataOfBreed({ ...dataOfBreed, [name]: value });
+
+    } else {
+      setDataOfBreed({ ...dataOfBreed, [name]: value });
+
+    }
+
   }
 
   const handleErrors = (evento) => {
     const { name, value } = evento.target;
     if (name === "image") {
-      setErrors({ ...dataOfBreed, [name]: evento.target.files[0] });
+      setErrors(createDogValidation({ ...dataOfBreed, [name]: evento.target.files[0] }));
     } else setErrors(createDogValidation({ ...dataOfBreed, [name]: value }));
-    setInputTouch({ ...inputTouch, [name]: true })
+    setInputTouch({ ...inputTouch, [name]: true });
   }
 
   return (
     <form onSubmit={handleSubmit}>
+      <h3>Agregar Raza de Perro</h3>
       <br />
-      <input type="text" id='name' name='name' onChange={handleChangeDataBreed} value={dataOfBreed.name} onBlur={handleErrors} />
-      <label htmlFor="name">Denominacion de la raza </label>
-      {errors?.name && inputTouch?.name && <span className={styles.error}>{errors.name}</span>}
-      <b>Altura</b>
-      <input type="text" id='hmin' name='heightMin' onChange={handleChangeDataBreed} value={dataOfBreed.heightMin} onBlur={handleErrors} />
-      <label htmlFor="hmin">Mínimo</label>
-      {errors?.heightMin && inputTouch?.heightMin && <span className={styles.error}>{errors.heightMin}</span>}
-      <input type="text" id='hmax' name='heightMax' onChange={handleChangeDataBreed} value={dataOfBreed.heightMax} onBlur={handleErrors} />
-      <label htmlFor="hmax">Máximo</label>
-      {errors?.heightMax && inputTouch?.heightMax && <span className={styles.error}>{errors.heightMax}</span>}
-      <b>Peso</b>
-      <input type="text" id='wmin' name='weightMin' onChange={handleChangeDataBreed} value={dataOfBreed.weightMin} onBlur={handleErrors} />
-      <label htmlFor="wmin">Mínimo</label>
-      <input type="text" id='wmax' name='weightMax' onChange={handleChangeDataBreed} value={dataOfBreed.weightMax} onBlur={handleErrors} />
-      <label htmlFor="wmax">Máximo</label>
-      <b>Tiempo de vida</b>
-      <input type="text" id='lspanmin' name='lifeSpanMin' onChange={handleChangeDataBreed} value={dataOfBreed.lifeSpanMin} onBlur={handleErrors} />
-      <label htmlFor="lspanmin">Mínimo</label>
-      <input type="text" id='lspanmax' name='lifeSpanMax' onChange={handleChangeDataBreed} value={dataOfBreed.lifeSpanMax} onBlur={handleErrors} />
-      <label htmlFor="lspanmax">Máximo</label>
+      <div className={styles.row}>
+        <div className={styles.name}>
+          <label htmlFor="name">Denominacion de la raza </label>
+          <input type="text" id='name' name='name' className={errors?.name && inputTouch?.name && styles.inputError} onChange={handleChangeDataBreed} value={dataOfBreed.name} onBlur={handleErrors} />
+          <ul className={styles.listErrors}>
+            {errors?.name && inputTouch?.name && <li className={styles.error}>{errors.name}</li>}
+          </ul>
+        </div>
 
-      <input type="file" name="image" id="image" onChange={handleChangeDataBreed} />
-      <label htmlFor="image">seleccionar imagen</label>
+        <div className={styles.fileContainer}>
+          <input type="file" name="image" id="image" onChange={handleChangeDataBreed} className={styles.fileInput} onBlur={handleErrors} />
+          <label htmlFor="image" className={styles.labelInputFile}>
+            <figure>
+              <img src={iconCamera} alt="" />
+            </figure>
+            <span className={errors?.image && inputTouch?.image ? styles.errorMessageLabel : styles.messageLabel}>{dataOfBreed.image === "" ? `Seleccionar imagen` : `Imagen seleccionada`}</span>
+          </label>
+          <ul className={styles.listErrors}>
+            {errors?.image && inputTouch?.image && <li className={styles.error}>{errors.image}</li>}
+          </ul>
+        </div>
+      </div>
+      <div className={styles.row}>
+        <div className={styles.height}>
+          <label htmlFor="height">Altura(cm)</label>
+          <div id='height' >
+            <input type="text" placeholder="Minimo" className={errors?.heightMin && inputTouch.heightMin && styles.inputError} id='hmin' name='heightMin' onChange={handleChangeDataBreed} value={dataOfBreed.heightMin} onBlur={handleErrors} />
+            <input type="text" placeholder="Máximo" className={errors?.heightMax && inputTouch.heightMax && styles.inputError} id='hmax' name='heightMax' onChange={handleChangeDataBreed} value={dataOfBreed.heightMax} onBlur={handleErrors} />
+          </div>
+          <ul className={styles.listErrors} >
+            {errors?.heightMin && inputTouch?.heightMin && <li className={styles.error}>{errors.heightMin}</li>}
+            {errors?.heightMax && inputTouch?.heightMax && <li className={styles.error}>{errors.heightMax}</li>}
+          </ul>
+        </div>
+        <div className={styles.weight}>
+          <label htmlFor="weight">Peso (kilos)</label>
+          <div>
+            <input type="text" placeholder="Minimo" className={errors?.weightMin && inputTouch.weightMin && styles.inputError} id='wmin' name='weightMin' onChange={handleChangeDataBreed} value={dataOfBreed.weightMin} onBlur={handleErrors} />
+            <input type="text" placeholder="Máximo" className={errors?.weightMax && inputTouch.weightMax && styles.inputError} id='wmax' name='weightMax' onChange={handleChangeDataBreed} value={dataOfBreed.weightMax} onBlur={handleErrors} />
+          </div>
+          <ul className={styles.listErrors} >
+            {errors?.weightMin && inputTouch?.weightMin && <li className={styles.error}>{errors.weightMin}</li>}
+            {errors?.weightMax && inputTouch?.weightMax && <li className={styles.error}>{errors.weightMax}</li>}
+          </ul>
+        </div>
+      </div>
 
 
-      <AutoComplete opciones={temperaments} getTemperamentsSelected={getTemperamentsSelected} onFocus={handleErrors} />
-      {errors?.temperaments && <span className={styles.error}>{errors.temperaments}</span>}
-      <button type="submit" >guardar</button>
+      <div className={styles.row}>
+        <div className={styles.lifeSpan}>
+          <label htmlFor="lspanmin">Tiempo de vida (años)</label>
+          <div>
+            <input type="text" placeholder="Minimo" className={errors?.lifeSpanMin && inputTouch.lifeSpanMin && styles.inputError} id='lspanmin' name='lifeSpanMin' onChange={handleChangeDataBreed} value={dataOfBreed.lifeSpanMin} onBlur={handleErrors} />
+            <input type="text" placeholder="Máximo" className={errors?.lifeSpanMax && inputTouch.lifeSpanMax && styles.inputError} id='lspanmax' name='lifeSpanMax' onChange={handleChangeDataBreed} value={dataOfBreed.lifeSpanMax} onBlur={handleErrors} />
+          </div>
+          <ul className={styles.listErrors} >
+            {errors?.lifeSpanMin && inputTouch?.lifeSpanMin && <li className={styles.error}>{errors.lifeSpanMin}</li>}
+            {errors?.lifeSpanMax && inputTouch?.lifeSpanMax && <li className={styles.error}>{errors.lifeSpanMax}</li>}
+          </ul>
+        </div>
+        <div className={styles.temperament}>
+          <label htmlFor="">Temperamento</label>
+          <AutoComplete opciones={temperaments} getTemperamentsSelected={getTemperamentsSelected} onBlur={handleErrors} removeTemperamentsFromSelected={removeTemperamentsFromSelected} />
+          <ul className={styles.listErrors} >
+            {errors?.temperaments && inputTouch?.temperaments && <li className={styles.error}>{errors.temperaments}</li>}
+          </ul>
+        </div>
+
+      </div>
+
+      <button type="submit" >Guardar</button>
 
     </form>
   )
