@@ -9,12 +9,15 @@ import Sort from '../../components/Sort';
 
 export const Home = (props) => {
   return (
-    <main className={styles.container}>Home
-        <SearchBar/>
-        <NavBar/>
-        <Filter/>
-        <Sort/>
-        <Cards/>
+    <main className={styles.container}>
+      <div></div>
+      <div className={styles.functions}>
+
+        <Sort />
+        <SearchBar />
+      </div>
+      <Filter />
+      <Cards />
     </main>
   )
 }

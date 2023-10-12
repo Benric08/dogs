@@ -1,6 +1,11 @@
 .container{
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    place-content: center;
+}
+.functions{
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
 }

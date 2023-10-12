@@ -5,15 +5,22 @@ import Card from './Card'
 import styled from 'styled-components'
 import Pagination from './Pagination'
 
+const CardWrapper = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+`;
+
 const CardContainer = styled.div`
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2%;
-        
-        width: 90vw;
-        
-        border:1px solid red;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-content: space-between;
+    width: 80vw;
+    gap: 20px;
+    justify-self: center;
     `;
+  
 const Cards = (props) => {
   const dispatch = useDispatch();
   const breeds = useSelector((state) => state.breeds);
@@ -37,17 +44,9 @@ const Cards = (props) => {
   useEffect(() => {
     setIsLoanding(true);
     loadBreeds();
-    console.log("logueao estado global bredds", breeds);
-    console.log("logueao estado global error", error);
   }, []);
-  useEffect(() => {
-    console.log("logueamos cada vez que cambio de pagina");
-    
-    
-  }, [currentPage]);
-  useEffect(() => {
-    console.log("logueamos cada vez que brreds cambia de pagina");
-    
+  
+  useEffect(() => {   
     setCurrentPage(1);
   }, [breeds]);
 
@@ -56,12 +55,14 @@ const Cards = (props) => {
       {isLoanding && <h1>is loading ...</h1>}
       {error.length > 0 ?
         <div>{error}</div> :
-        <div>
+        <CardWrapper>
           <CardContainer>
             {breeds?.slice(initIndexBreed, finalIndexBreed).map((breed) => <Card key={breed.breed.id} breed={breed.breed} />)}
-          </CardContainer>
+          </CardContainer> 
           <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} numberOfBreeds={numberOfBreeds} breedsPerPage={breedsPerPage} />
-        </div>
+
+        </CardWrapper>
+          
       }
 
     </>
