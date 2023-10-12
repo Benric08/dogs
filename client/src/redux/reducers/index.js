@@ -10,6 +10,7 @@ import {
     SEARCH_BY_NAME,
     GET_BREED_BY_ID,
     CREATE_BREED,
+    CREATE_BREED_FAILURE,
 } from "../actions/types";
 
 const initialState = {
@@ -98,8 +99,9 @@ export const rootReducer = (state = initialState, action) => {
         case GET_BREED_BY_ID:
             return {...state,breed:action.payload}
         case CREATE_BREED:
-            console.log("entramos al reducer crear perro",action.payload);
             return { ...state, breeds: [...state.breeds,action.payload], allBreeds: [...state.allBreeds,action.payload ]};
+        case CREATE_BREED_FAILURE:
+            return { ...state,error:action.payload}
         default:
             return { ...state };
     }

@@ -71,12 +71,13 @@ export const getBreedById = (id) => async (dispatch) => {
    }
 }
 export const createBreed = (formData) => async (dispatch) => {
-   console.log("formdat en el action",formData);
    try {
       const { data } = await axios.post(`${basePath}/dogs`,formData);
       return dispatch({ type: CREATE_BREED, payload: data });
    } catch (error) {
-      return dispatch({ type: CREATE_BREED_FAILURE, payload: "No pudimos crear la raza" });
+      console.log(error.response.data.error);
+      throw new Error(error.response.data.error);
+      //return dispatch({ type: CREATE_BREED_FAILURE, payload: `"No pudimos crear la raza" ${error.response.data.error}` });
    }
 }
 

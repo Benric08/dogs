@@ -85,56 +85,28 @@ const getDogByNameController = async (name) => {
 
 //TODO: function to create a new breed dog 
 const createDogController = async (dataDog) => {
-    console.log("conologueamos si hay data ", dataDog);
     const { name, image, height, weight, lifeSpan, temperaments } = dataDog;
     const newDog = { name, image, height, weight, lifeSpan };
 
-    //TODO: creatin a transaction to manage the insertion of the temeperaments y dog
+    //TODO: creating a transaction to manage the insertion of the temeperaments y dog
     const result = await dbConnection.transaction(async (t) => {
         const dogCreated = await Dog.create(newDog, { transaction: t });
 
         //? validating if there are temperements to create the breed dog
-        if(temperaments.length===0) throw new Error("La raza que intentas cread debe tener almenos un temperamento");
+        if(temperaments.length===0) throw new Error("La raza que intentas crear debe tener almenos un temperamento");
         const dogTemperaments = temperaments.map((temperament) => {
             return { dogId: dogCreated.id, temperamentId: temperament }
         }
         ); 
-        //!consola
-        console.log("consologueamos dog", dogCreated.dataValues);
+        //?inserting data into DogTemperament
         const dogTemperamentsCreated = await DogTemperament.bulkCreate(dogTemperaments, { transaction: t });
-        //!CONSOLA
-        console.log('consologeamos temperamens', dogTemperamentsCreated)
+        
         if (!dogCreated || !dogTemperamentsCreated) throw new Error('No se puedo guardar la raza de perro');
         return dogCreated;
     }
     );
-    //!CONSOLO 
-    console.log("Consologueamos result", result);
     return result;
 
-    /* const dogCreated = await Dog.create(newDog);
-    //!consologueamos el perro creado
-    console.log("perro creado", dogCreated);
-    if (!dogCreated) {
-        throw new Error('No se pudo guardar la raza de perro');
-    }
-
-    // TODO: creating objets with idDog  and idTemperaments
-    const dogTemperaments = temperaments.map((temperament) => {
-        return {dogId: dogCreated.id,temperamentId:temperament}
-    }
-    );
-
-    //!console temprament with dog object
-    console.log('console temprament with dog objet',dogTemperaments);
-    const dogTemperamentsCreated = await DogTemperament.bulkCreate(dogTemperaments); 
-    if(!dogTemperamentsCreated){
-
-        throw new Error('Algo salio mal');
-    }
-    //! consologueamos dogtemperaments 
-    console.log("consologueamos dogtemperaments ",dogTemperamentsCreated);
-    return dogCreated; */
 }
 
 

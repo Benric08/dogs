@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import AutoComplete from '../../components/AutoComplete';
 import createDogValidation from '../../utils/form-validations/createDogValidator';
-import { createBreed } from '../../redux/actions';
+import { createBreed, getAllTemperaments } from '../../redux/actions';
 import styles from './CreateDog.module.css';
 import iconCamera from '../../assets/icons/camera.svg';
+import { isCorrectForm } from '../../utils/validation';
+import Notification from '../../components/Notification';
 
 const dataInput = {
   name: "",
@@ -20,10 +22,11 @@ const dataInput = {
 function CreateDog() {
   const dispatch = useDispatch();
   const temperaments = useSelector((state) => state.temperaments);
-  console.log("tempressssssss", temperaments);
   const [dataOfBreed, setDataOfBreed] = useState(dataInput);
-  const [inputTouch, setInputTouch] = useState(dataInput);
-  const [errors, setErrors] = useState({});
+  const [inputTouch, setInputTouch] = useState({});
+  const [errors, setErrors] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
   //TODO: recibimos los cambios del componente AutoComplete y los modificacmos en el estado de los inputs
   const getTemperamentsSelected = (temperament) => {
     setDataOfBreed({ ...dataOfBreed, temperaments: [...dataOfBreed.temperaments, temperament.id] });
@@ -32,11 +35,27 @@ function CreateDog() {
   const removeTemperamentsFromSelected = (temperament) => {
     setDataOfBreed({ ...dataOfBreed, temperaments: dataOfBreed.temperaments.filter((temper) => temper !== temperament.id) });
   }
-  const handleSubmit = (e) => {
-    console.log("enviado datos del peero ", dataOfBreed);
-    e.preventDefault();
-    //!validar form
+  //? function to dispach the action creator
+  const dispatchingAction = async (formData) => {
+    await dispatch(createBreed(formData))
+      .then(() => {
+        setNotification({ type: 'success', message: '¡EXITO! Hemos creado la raza satisfactoriamente' });
+      })
+      .catch((error) => {
 
+        setNotification({ type: 'error', message: `¡ERROR! ${error}` });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+
+  }
+
+  const handleSubmit = (e) => {
+    setIsLoading(true);
+    e.preventDefault();
+
+    if (isCorrectForm(errors)) {
     const dataToSend =
     {
       name: dataOfBreed.name,
@@ -45,12 +64,19 @@ function CreateDog() {
       lifeSpan: `${dataOfBreed.lifeSpanMin} - ${dataOfBreed.lifeSpanMax}`,
       temperaments: dataOfBreed.temperaments
     }
-    console.log("formadno los datos para enviar ", dataToSend);
+
     const formData = new FormData();
     formData.append('breed', JSON.stringify(dataToSend));
     formData.append('image', dataOfBreed.image);
-    console.log("formdata--->>>", formData);
-    dispatch(createBreed(formData));
+
+    dispatchingAction(formData);
+    } else {
+      //alert("complete todos los campos");
+      setNotification({type:"error",message:"¡ERROR! complete todos los campos del formulario "});
+      setIsLoading(false);
+    } 
+
+
   }
 
   const handleChangeDataBreed = (evento) => {
@@ -65,17 +91,39 @@ function CreateDog() {
     }
 
   }
+  const resetForm = () => {
+    setDataOfBreed(dataInput);
+
+  }
 
   const handleErrors = (evento) => {
     const { name, value } = evento.target;
+
     if (name === "image") {
-      setErrors(createDogValidation({ ...dataOfBreed, [name]: evento.target.files[0] }));
+      setErrors(createDogValidation({ ...dataOfBreed, [name]: evento.target.files[0] ?? "" }));
     } else setErrors(createDogValidation({ ...dataOfBreed, [name]: value }));
     setInputTouch({ ...inputTouch, [name]: true });
   }
+  useEffect(() => {
+    if (notification?.type === 'success') {
+      resetForm();
+    }
+  }, [notification]);
+
+  useEffect(() => {
+    dispatch(getAllTemperaments());
+  }, [])
+  
+
 
   return (
     <form onSubmit={handleSubmit}>
+      {notification &&
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />}
       <h3>Agregar Raza de Perro</h3>
       <br />
       <div className={styles.row}>
@@ -140,7 +188,13 @@ function CreateDog() {
         </div>
         <div className={styles.temperament}>
           <label htmlFor="">Temperamento</label>
-          <AutoComplete opciones={temperaments} getTemperamentsSelected={getTemperamentsSelected} onBlur={handleErrors} removeTemperamentsFromSelected={removeTemperamentsFromSelected} />
+          <AutoComplete
+            opciones={temperaments}
+            getTemperamentsSelected={getTemperamentsSelected}
+            onBlur={handleErrors}
+            removeTemperamentsFromSelected={removeTemperamentsFromSelected}
+            className={errors?.temperaments && inputTouch?.temperaments}
+          />
           <ul className={styles.listErrors} >
             {errors?.temperaments && inputTouch?.temperaments && <li className={styles.error}>{errors.temperaments}</li>}
           </ul>
@@ -148,7 +202,10 @@ function CreateDog() {
 
       </div>
 
-      <button type="submit" >Guardar</button>
+      <button type="submit" disabled={isLoading} >Guardar</button>
+      <div className={styles.loadingSpinner}>
+        <div className={styles.spinner}></div>
+      </div>
 
     </form>
   )

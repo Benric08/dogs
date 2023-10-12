@@ -1,13 +1,15 @@
 
 let regex = ''
 export function isCorrectForm(errors) {
-    return Object.keys(errors).length < 1;
+    const e = errors??{error:true};
+    return Object.keys(e).length < 1;
 }
 export function isEmpty(text) {
     if (text === "") return true;
     else return false;
 }
 export function isArrayEmpty(array) {
+    console.log("array ===<<>>===",array);
     if (array.length === 0) return true;
     else return false;
 }

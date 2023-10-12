@@ -21,8 +21,7 @@ const getDogByIdHandler = async (req, res) => {
 }
 const getDogByNameHandler = async (req, res) => {
   const { name } = req.query;
-  //! consaola
-  console.log("vemos lo que se requpera de query", name);
+  
   try {
     const dog = await getDogByNameController(name.toLowerCase());
     res.status(200).json(dog);
@@ -33,11 +32,10 @@ const getDogByNameHandler = async (req, res) => {
 
 const createDogHandler = async (req, res) => {
 
-  
+  //?recovering the frontend side this come as a json , for that I convert into objet with JSON.pase
   const dataDog = JSON.parse(req.body.breed);
- 
+  //? recovering the file, and get only the name to save into the database
   if (req.file) {
-    
     const fileName = req.file.filename;
     dataDog.image = fileName;
   }

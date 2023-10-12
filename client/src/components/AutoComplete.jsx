@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
 
 
 const Autocomplete = styled.div`
+    border: ${props => props.error ?'2px solid red':'2px solid #ccc'};
+
     position: relative;
     width: 300px;
     background-color: white;
     border-radius: 12px;
-    border: 1px solid #ccc;
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
     padding: 2px;
     &:hover{
         border: 1px solid #807182;
@@ -73,9 +75,9 @@ const ItemSelected = styled.span`
 
 
 
-const AutoComplete = ({ opciones, getTemperamentsSelected, onBlur,removeTemperamentsFromSelected }) => {
-    console.log("tempre", opciones);
-    const [opcionesToShow, setOpcionesToShow] = useState(opciones)
+const AutoComplete = ({ opciones, getTemperamentsSelected, onBlur,removeTemperamentsFromSelected ,className}) => {
+    
+    const [opcionesToShow, setOpcionesToShow] = useState();
     const [inputValue, setInputValue] = useState('');
     const [filteredOptions, setFilteredOptions] = useState([]);
     const [showOptions, setShowOptions] = useState(false);
@@ -84,14 +86,12 @@ const AutoComplete = ({ opciones, getTemperamentsSelected, onBlur,removeTemperam
     const handleInputChange = (e) => {
         const { value } = e.target;
         setInputValue(value);
-
-        // Filtra las opciones basadas en el valor de entrada
+        // ? getting temperaments according the data in the input
         const filtered = opcionesToShow.filter((opcion) =>
-            opcion.name.toLowerCase().includes(inputValue.toLowerCase())
+            opcion.name.toLowerCase().includes(inputValue?.toLowerCase())
         );
         setFilteredOptions(filtered);
-
-        // Muestra las opciones si hay coincidencias, ocúltalas si no las hay
+        //? if there are concidences to show the component is showed with the filtered options
         setShowOptions(filtered.length > 0);
     };
 
@@ -116,20 +116,25 @@ const AutoComplete = ({ opciones, getTemperamentsSelected, onBlur,removeTemperam
 
         getTemperamentsSelected(opcion);
     };
-    const handleOnFocus = () => {
+    const handleOnBlur = () => {
         
         onBlur({target:{name:'temperaments', value:selectedOptions}});
     }
-
-
+    useEffect(() => {
+      setOpcionesToShow(opciones);
+    }, [opciones])
+    
+    
+    
+    
     return (
-        <Autocomplete>
+        <Autocomplete error={className }>
             {selectedOptions.map((opcion) => <ItemSelected key={opcion.id} onClick={() => handleDeleteElement(opcion)}>{opcion.name}</ItemSelected>)}
             <Input
                 type="text"
                 value={inputValue}
                 onChange={handleInputChange}
-                onBlur={handleOnFocus}
+                onBlur={handleOnBlur}
                 placeholder="Escriba el temperamento de la raza..."
                 name='temperaments'
             />
